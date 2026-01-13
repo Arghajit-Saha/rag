@@ -19,7 +19,7 @@ db = Chroma(
 )
 
 # User Query 
-query = "When did Google became a public company?"
+query = input("Enter Your Question: ")
 
 retriever = db.as_retriever(
     search_type="similarity_score_threshold",

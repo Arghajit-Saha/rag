@@ -1,96 +1,104 @@
 # RAG Project
 
 > [!NOTE]
-> **Work in Progress**: This project is currently under active development and is considered incomplete.
+> **Work in Progress**: This project is under active development.
 
-A generic Retrieval-Augmented Generation (RAG) implementation using LangChain, Ollama, and ChromaDB. This project demonstrates how to ingest text documents, create vector embeddings, and perform semantic retrieval to answer queries based on the ingested context.
+A Retrieval-Augmented Generation (RAG) system built with LangChain, Ollama, ChromaDB, and OpenRouter. This project allows you to ingest text documents, create vector embeddings locally, and perform semantic retrieval to generate accurate answers using LLMs (e.g., GPT-4o-mini).
 
 ## Features
 
-- **Document Ingestion**: Load text documents from a directory.
-- **Text Chunking**: Split documents into manageable chunks for embedding.
-- **Vector Storage**: Store embeddings locally using ChromaDB.
-- **Semantic Retrieval**: Query the vector store to find relevant context.
-- **Local LLM Support**: Uses Ollama for embeddings.
+- **Document Ingestion**: Load and process text documents from the `docs/` directory.
+- **Smart Chunking**: Split documents into semantic chunks for efficient embedding.
+- **Vector Storage**: Store embeddings locally using **ChromaDB**.
+- **Local Embeddings**: Uses **Ollama** (`nomic-embed-text`) for privacy-preserving, local embeddings.
+- **Answer Generation**: Uses **OpenRouter** (accessing models like GPT-4o-mini) to generate natural language answers based on retrieved context.
 
 ## Tech Stack
 
-- **Python 3.x**
-- **[LangChain](https://python.langchain.com/docs/get_started/introduction)**: Framework for developing applications powered by language models.
-- **[Ollama](https://ollama.com/)**: Run Llama 3, Mistral, Gemma, and other models locally.
-- **[ChromaDB](https://www.trychroma.com/)**: The open-source embedding database.
+- **Python 3.8+**
+- **[LangChain](https://python.langchain.com/)**: Orchestration framework.
+- **[Ollama](https://ollama.com/)**: Local model runner (for embeddings).
+- **[ChromaDB](https://www.trychroma.com/)**: Vector database.
+- **[OpenRouter](https://openrouter.ai/)**: Unified API for LLMs.
 
 ## Prerequisites
 
-1.  **Python 3.8+** installed.
+1.  **Python 3.8+**
 2.  **Ollama** installed and running.
-    *   Install Ollama from [ollama.com](https://ollama.com).
-    *   Pull the embedding model required for this project:
+    *   Pull the embedding model:
         ```bash
         ollama pull nomic-embed-text:v1.5
         ```
+3.  **OpenRouter API Key**: Sign up at [openrouter.ai](https://openrouter.ai/) to get an API key.
 
 ## Installation
 
 1.  Clone the repository:
     ```bash
-    git clone <repository_url>
-    cd <repository_name>
+    git clone https://github.com/Arghajit-Saha/rag-system
+    cd rag-system
     ```
 
-2.  Create a virtual environment (recommended):
+2.  Create a virtual environment:
     ```bash
     python -m venv .venv
-    source .venv/bin/activate  # On Windows use `.venv\Scripts\activate`
+    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
     ```
 
 3.  Install dependencies:
     ```bash
     pip install -r requirements.txt
     ```
-    *(Note: If `requirements.txt` is missing, you may need to manually install `langchain-community`, `langchain-ollama`, `langchain-chroma`, `python-dotenv`)*
 
-4.  Set up environment variables:
-    *   Create a `.env` file if necessary (check `.env.example` if available).
+4.  Configure Environment Variables:
+    Create a `.env` file in the root directory:
+    ```ini
+    OPENROUTER_API_KEY=your_api_key_here
+    ```
 
 ## Usage
 
 ### 1. Ingest Documents
 
-Place your `.txt` files in the `docs/` directory. Then run the ingestion pipeline to process the documents and create the vector store:
+Place your `.txt` files in the `docs/` directory. Then run the ingestion pipeline:
 
 ```bash
 python ingestion_pipeline.py
 ```
 
-This script will:
-- Load documents from `docs/`.
-- Split them into chunks.
-- Generate embeddings using Ollama.
-- Store them in `db/chroma_db`.
+This will load the documents, chunk them, generate embeddings locally with Ollama, and store them in `db/chroma_db`.
 
-### 2. Query / Retrieval
+### 2. Retrieval (Test)
 
-Run the retrieval pipeline to query the vector store:
+To test the retrieval mechanism (top 3 relevant chunks):
 
 ```bash
 python retrieval_pipeline.py
 ```
+*(Note: This uses a hardcoded query in the script)*
 
-Currently, the query is hardcoded in the script (`"When did Google became a public company?"`). You can modify the `query` variable in `retrieval_pipeline.py` to test different questions.
+### 3. Generate Answers
+
+To ask questions and get generated answers based on your documents:
+
+```bash
+python answer_generation.py
+```
+
+You will be prompted to enter your question. The system will retrieve relevant context and generate an answer using GPT-4o-mini via OpenRouter.
 
 ## Project Structure
 
 ```
 .
-├── db/                   # ChromaDB persistence directory (created after ingestion)
-├── docs/                 # Directory for input text documents
-├── ingestion_pipeline.py # Script to ingest and embed documents
-├── retrieval_pipeline.py # Script to query the vector store
-├── .gitignore            # Git ignore file
-└── README.md             # Project documentation
+├── db/                   # ChromaDB persistence directory
+├── docs/                 # Source text documents
+├── answer_generation.py  # RAG pipeline with LLM answer generation
+├── ingestion_pipeline.py # Document processing and embedding
+├── retrieval_pipeline.py # Context retrieval testing
+├── .env                  # Environment variables (API keys)
+├── .gitignore
+└── README.md
 ```
 
-## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
